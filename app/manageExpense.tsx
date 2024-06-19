@@ -2,6 +2,7 @@ import ExpenseForm from "@/components/ManageExpense/ExpenseForm";
 import IconButton from "@/components/ui/IconButton";
 import { Colors } from "@/constants/Colors";
 import { ExpensesContext } from "@/store/expenses-context";
+import { deleteExpense, storeExpense, updateExpense } from "@/utils/http";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useContext, useLayoutEffect } from "react";
 import { StyleSheet, View } from "react-native";
@@ -24,8 +25,9 @@ export default function ManageExpenseScreen() {
     });
   }, [navigation, isEditing]);
 
-  const deleteExpenseHandler = () => {
+  const deleteExpenseHandler = async () => {
     expensesCtx.removeExpense(expenseId!);
+    await deleteExpense(expenseId!);
     router.back();
   };
 
@@ -33,11 +35,17 @@ export default function ManageExpenseScreen() {
     router.back();
   };
 
-  const confirmHandler = (expenseData: any) => {
+  const confirmHandler = async (expenseData: {
+    description: string;
+    amount: number;
+    date: Date;
+  }) => {
     if (isEditing) {
-      expensesCtx.updateExpense(expenseId!, expenseData);
+      expensesCtx.updateExpense(expenseId, expenseData);
+      await updateExpense(expenseId, expenseData);
     } else {
-      expensesCtx.addExpense(expenseData);
+      const id = await storeExpense(expenseData);
+      expensesCtx.addExpense({ ...expenseData, id: id });
     }
     router.back();
   };

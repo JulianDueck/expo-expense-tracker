@@ -1,11 +1,20 @@
 import ExpensesOutput from "@/components/ExpensesOutput";
-import { dummyExpenses, ExpensesContext } from "@/store/expenses-context";
+import { ExpensesContext } from "@/store/expenses-context";
 import { getDateMinusDays } from "@/utils/date";
-import { useContext } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { getExpenses } from "@/utils/http";
+import { useContext, useEffect } from "react";
 
 export default function HomeScreen() {
   const expensesCtx = useContext(ExpensesContext);
+
+  useEffect(() => {
+    async function fetchExpenses() {
+      const expenses = await getExpenses();
+      expensesCtx.setExpenses(expenses);
+    }
+
+    fetchExpenses();
+  }, []);
 
   const recentExpenses = expensesCtx.expenses.filter((expense) => {
     const today = new Date();
@@ -21,22 +30,3 @@ export default function HomeScreen() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});
