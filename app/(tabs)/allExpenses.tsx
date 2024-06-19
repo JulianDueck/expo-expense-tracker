@@ -1,10 +1,16 @@
+import ExpensesOutput from "@/components/ExpensesOutput";
+import { dummyExpenses, ExpensesContext } from "@/store/expenses-context";
+import { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 export default function TabTwoScreen() {
+  const expensesCtx = useContext(ExpensesContext);
   return (
-    <View>
-      <Text>Second Tab</Text>
-    </View>
+    <ExpensesOutput
+      expenses={expensesCtx.expenses}
+      expensesPeriod="Total"
+      fallback="No registered expenses found."
+    />
   );
 }
 
